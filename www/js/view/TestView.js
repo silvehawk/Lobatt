@@ -17,12 +17,21 @@ var TestView = function() {
 
 	this.addLocation = function(event) {
 		event.preventDefault();
-		console.log("addLocation");
-		navigator.geolocation.getCurrentPosition(function(position) {
-			$(".location", this.el).html(position.coords.latitude + ", " + position.coords.longitude);
-		}, function() {
-			alert("Error getting location");
-		});
+		$(".location", this.el).html("Finding geolocation...");
+
+		var onSuccess = function(position) {
+			$(".location", this.el).html(position.coords.latitude + ", " + position.coords.longitude + ", " + position.coords.accuracy + ", " + position.timestamp);
+		};
+		var onError = function(error) {
+			alert("Error getting location:\n" + "code: " + error.code + "\n" + "message: " + error.message + "\n");
+			$(".location", this.el).html("Location couldn't be determined");
+		};
+		var options = {
+			maximumAge: 1000*60*5,
+			timeout: 1000*10,
+			enableHighAccuracy: true
+		};
+		navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
 		return false;
 	};
 
